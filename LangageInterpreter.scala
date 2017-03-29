@@ -39,13 +39,15 @@ class LangageInterpreter(s: String) extends JavaTokenParsers {
 
   def number: Parser[Double] = floatingPointNumber ^^ { f => f toDouble }
 
+  def expression: Parser[Double] = "(" ~> expr <~ ")" ^^ { f => f }
+
   def E: Parser[Double] = "E" ^^ { f => 10 }
 
   def exponential: Parser[Double] = "e" ^^ { f => Math.exp(1) }
 
   def ln: Parser[Double] = "ln(" ~ operand ~ ")" ^^ {
     case o1 ~ o ~ o2 => {
-      if(o > 0) Math.log(o) else println("Not defined"); 0
+      if(o > 0) Math.log(o) else { println("Not defined"); 0 }
     }
   }
 
@@ -74,7 +76,6 @@ class LangageInterpreter(s: String) extends JavaTokenParsers {
 
   def pi: Parser[Double] = "pi" ^^ { f => Math.PI }
 
-  def expression: Parser[Double] = "(" ~> expr <~ ")" ^^ { f => f }
 
   implicit class int2Factorial(n: Double) {
     def ! : Double = {
@@ -83,11 +84,6 @@ class LangageInterpreter(s: String) extends JavaTokenParsers {
       f toDouble
     }
   }
-
-  implicit class CaseInsensitiveRegex(sc: StringContext) {
-    def insensitive: Regex = ( "(?i)" + sc.parts.mkString ).r
-  }
-
 
   def compute(): Double = {
     parseAll(expr, s) get

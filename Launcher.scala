@@ -11,7 +11,7 @@ object Launcher {
       var expression = StdIn.readLine(">")
       if( List("quit","stop","bye","end") contains expression ) { println("Thank you :) Bye."); System.exit(0) }
       try {
-        println(LangageInterpreter(expression).compute())
+        println(s"$expression = ${LangageInterpreter(expression).compute()}")
       }
       catch {
         case ex: Exception => println("Please input a correct expression.")
