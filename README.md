@@ -1,7 +1,7 @@
 # Scalarith
 
 <h1 style="text-align:center">
-<img src="./example/example_output.png" width="800px" height="300px">
+<img src="./example/example_output.png" >
 </h1>
 
 A basic expression interpreter made with Scala.
