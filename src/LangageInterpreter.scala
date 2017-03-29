@@ -76,7 +76,6 @@ class LangageInterpreter(s: String) extends JavaTokenParsers {
 
   def pi: Parser[Double] = "pi" ^^ { f => Math.PI }
 
-
   implicit class int2Factorial(n: Double) {
     def ! : Double = {
       var f: BigInt = 1
