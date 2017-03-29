@@ -8,7 +8,7 @@ This expression parser supports :
 - The four basic operations : + \ - \ * \ /
 - The power operation : x^y 
 - The parenthesis priority : (a+b)*c
-- The operations priority : multiplication and division are prior to addition and substraction
+- The operations priority : multiplication and division have priority
 - The trigonometry functions : cos() / sin() / tan() / arcos() / arcsin() / arctan()
 - The exponential function : e^x
 - The power of 10 operator : 1E5 = 1 * 10 ^5 = 100 000
