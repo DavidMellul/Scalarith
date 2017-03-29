@@ -57,7 +57,7 @@ class LangageInterpreter(s: String) extends JavaTokenParsers {
     case o1 ~ o ~ o2 => Math.sqrt(o)
   }
 
-  def percent: Parser[Double] = (number | expression) ~ "% of" ~ (number | expression) ^^ {
+  def percent: Parser[Double] = (number | expression) ~ ("% of" | "percents of") ~ (number | expression) ^^ {
     case o1 ~ o ~ o2 => (o1 * o2)/100.0
   }
 
