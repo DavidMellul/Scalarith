@@ -34,13 +34,21 @@ class LangageInterpreter(s: String) extends JavaTokenParsers {
     }
   }
 
-  def operand: Parser[Double] = number | expression | exponential | E | trigonometry | pi
+  def operand: Parser[Double] = factorial | number | expression | exponential | ln | E | trigonometry | pi
 
   def number: Parser[Double] = floatingPointNumber ^^ { f => f toDouble }
 
-  def E: Parser[Double] =  "E" ^^ { f => 10 }
+  def E: Parser[Double] = "E" ^^ { f => 10 }
 
   def exponential: Parser[Double] = "e" ^^ { f => Math.exp(1) }
+
+  def ln: Parser[Double] = "ln(" ~ operand ~ ")" ^^ {
+    case o1 ~ o ~ o2 => Math.log(o)
+  }
+
+  def factorial : Parser[Double] = (number | expression) ~ "!" ^^ {
+    case o ~ o1 =>  o!
+  }
 
   def trigonometry: Parser[Double] = ("sin(" | "cos(" | "tan(" | "asin(" | "acos(" | "atan(") ~ expr ~ ")" ^^ {
     case o1 ~ o ~ o2 => o1 match {
@@ -56,6 +64,16 @@ class LangageInterpreter(s: String) extends JavaTokenParsers {
   def pi: Parser[Double] = "pi" ^^ { f => Math.PI }
 
   def expression: Parser[Double] = "(" ~> expr <~ ")" ^^ { f => f }
+
+
+  implicit class int2Factorial(n: Double) {
+    def ! : Double = {
+      var f: BigInt = 1
+      for(i <- BigInt(2) to n.toInt) f *= i
+      f toDouble
+    }
+  }
+
 
   def compute(): Double = {
     parseAll(expr, s) get
