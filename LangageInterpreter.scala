@@ -1,6 +1,7 @@
 package Exercise_5
 
 
+import scala.util.matching.Regex
 import scala.util.parsing.combinator.JavaTokenParsers
 
 /**
@@ -34,7 +35,7 @@ class LangageInterpreter(s: String) extends JavaTokenParsers {
     }
   }
 
-  def operand: Parser[Double] = factorial | number | expression | exponential | ln | E | trigonometry | pi
+  def operand: Parser[Double] =  factorial | percent | number | expression | exponential | ln | E | trigonometry | sqrt |  pi
 
   def number: Parser[Double] = floatingPointNumber ^^ { f => f toDouble }
 
@@ -43,11 +44,21 @@ class LangageInterpreter(s: String) extends JavaTokenParsers {
   def exponential: Parser[Double] = "e" ^^ { f => Math.exp(1) }
 
   def ln: Parser[Double] = "ln(" ~ operand ~ ")" ^^ {
-    case o1 ~ o ~ o2 => Math.log(o)
+    case o1 ~ o ~ o2 => {
+      if(o > 0) Math.log(o) else println("Not defined"); 0
+    }
   }
 
   def factorial : Parser[Double] = (number | expression) ~ "!" ^^ {
     case o ~ o1 =>  o!
+  }
+
+  def sqrt : Parser[Double] = "sqrt(" ~ operand ~ ")" ^^ {
+    case o1 ~ o ~ o2 => Math.sqrt(o)
+  }
+
+  def percent: Parser[Double] = (number | expression) ~ "% of" ~ (number | expression) ^^ {
+    case o1 ~ o ~ o2 => (o1 * o2)/100.0
   }
 
   def trigonometry: Parser[Double] = ("sin(" | "cos(" | "tan(" | "asin(" | "acos(" | "atan(") ~ expr ~ ")" ^^ {
@@ -65,13 +76,16 @@ class LangageInterpreter(s: String) extends JavaTokenParsers {
 
   def expression: Parser[Double] = "(" ~> expr <~ ")" ^^ { f => f }
 
-
   implicit class int2Factorial(n: Double) {
     def ! : Double = {
       var f: BigInt = 1
-      for(i <- BigInt(2) to n.toInt) f *= i
+      for(i <- BigInt(2) to Math.abs(n.toInt)) f *= i
       f toDouble
     }
+  }
+
+  implicit class CaseInsensitiveRegex(sc: StringContext) {
+    def insensitive: Regex = ( "(?i)" + sc.parts.mkString ).r
   }
 
 
