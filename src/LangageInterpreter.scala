@@ -1,7 +1,5 @@
 package Exercise_5
 
-
-import scala.util.matching.Regex
 import scala.util.parsing.combinator.JavaTokenParsers
 
 /**
@@ -10,10 +8,14 @@ import scala.util.parsing.combinator.JavaTokenParsers
 
 
 object LangageInterpreter {
-  def apply(s: String): LangageInterpreter = new LangageInterpreter(s)
+  var li:LangageInterpreter = new LangageInterpreter("")
+
+  def apply(s: String): LangageInterpreter = { li.expressionToCompute = s; li }
 }
 
 class LangageInterpreter(s: String) extends JavaTokenParsers {
+  var expressionToCompute:String = s
+  var m_storedResult = 0.0
 
   def expr: Parser[Double] = factor ~ rep("+" ~ factor | "-" ~ factor) ^^ {
     case o1 ~ o2 => o2.foldLeft(o1) {
@@ -35,7 +37,7 @@ class LangageInterpreter(s: String) extends JavaTokenParsers {
     }
   }
 
-  def operand: Parser[Double] =  factorial | percent | number | expression | exponential | ln | E | trigonometry | sqrt |  pi
+  def operand: Parser[Double] =  factorial | percent | number | expression | exponential | ln | E | trigonometry | sqrt | res | pi
 
   def number: Parser[Double] = floatingPointNumber ^^ { f => f toDouble }
 
@@ -63,6 +65,8 @@ class LangageInterpreter(s: String) extends JavaTokenParsers {
     case o1 ~ o ~ o2 => (o1 * o2)/100.0
   }
 
+  def res: Parser[Double] = ("res" | "r" ) ^^ { f => m_storedResult }
+
   def trigonometry: Parser[Double] = ("sin(" | "cos(" | "tan(" | "asin(" | "acos(" | "atan(") ~ expr ~ ")" ^^ {
     case o1 ~ o ~ o2 => o1 match {
       case ("cos(") => Math.cos(o)
@@ -85,7 +89,8 @@ class LangageInterpreter(s: String) extends JavaTokenParsers {
   }
 
   def compute(): Double = {
-    parseAll(expr, s) get
+    m_storedResult = parseAll(expr, expressionToCompute) get;
+    m_storedResult
   }
 }
 
