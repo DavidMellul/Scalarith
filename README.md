@@ -1,5 +1,9 @@
 # Scalarith
 
+<h1 style="text-align:center">
+<img src="./example/example_output.png" >
+</h1>
+
 A basic expression interpreter made with Scala.
 
 This project has been made in order to train the basics of Parsing with Scala.
