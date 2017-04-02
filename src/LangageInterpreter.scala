@@ -14,17 +14,20 @@ object LangageInterpreter {
 }
 
 class LangageInterpreter(s: String) extends JavaTokenParsers {
-  var expressionToCompute:String = s
-  var m_storedResult = 0.0
 
-  def expr: Parser[Double] = factor ~ rep("+" ~ factor | "-" ~ factor) ^^ {
+  var expressionToCompute:String = s
+  var definitions: scala.collection.mutable.Map[String,Double] = scala.collection.mutable.Map("pi" -> Math.PI, "res" -> 0.0)
+
+  def expr: Parser[Double] =  definition | lowPriorityOperations
+
+  def lowPriorityOperations: Parser[Double] =  highPriorityOperations ~ rep("+" ~ highPriorityOperations | "-" ~ highPriorityOperations) ^^ {
     case o1 ~ o2 => o2.foldLeft(o1) {
       case (a, "+" ~ b) => a + b
       case (a, "-" ~ b) => a - b
     }
   }
 
-  def factor: Parser[Double] = power ~ rep("*" ~ power | "/" ~ power) ^^ {
+  def highPriorityOperations: Parser[Double] = power ~ rep("*" ~ power | "/" ~ power) ^^ {
     case o1 ~ o2 => o2.foldLeft(o1) {
       case (a, "*" ~ b) => a * b
       case (a, "/" ~ b) => a / b
@@ -37,7 +40,7 @@ class LangageInterpreter(s: String) extends JavaTokenParsers {
     }
   }
 
-  def operand: Parser[Double] =  factorial | percent | number | expression | exponential | ln | E | trigonometry | sqrt | res | pi
+  def operand: Parser[Double] =   factorial | percent | number | expression | exponential | ln | E | trigonometry | sqrt | variable
 
   def number: Parser[Double] = floatingPointNumber ^^ { f => f toDouble }
 
@@ -65,8 +68,6 @@ class LangageInterpreter(s: String) extends JavaTokenParsers {
     case o1 ~ o ~ o2 => (o1 * o2)/100.0
   }
 
-  def res: Parser[Double] = ("res" | "r" ) ^^ { f => m_storedResult }
-
   def trigonometry: Parser[Double] = ("sin(" | "cos(" | "tan(" | "asin(" | "acos(" | "atan(") ~ expr ~ ")" ^^ {
     case o1 ~ o ~ o2 => o1 match {
       case ("cos(") => Math.cos(o)
@@ -78,7 +79,12 @@ class LangageInterpreter(s: String) extends JavaTokenParsers {
     }
   }
 
-  def pi: Parser[Double] = "pi" ^^ { f => Math.PI }
+  def definition: Parser[Double] = "define" ~ """\w+""".r ~ "=" ~ operand ^^ {
+    case d ~ v ~ e ~ o => definitions += (v -> o)
+    definitions(v)
+  }
+
+  def variable: Parser[Double] = """\w+""".r ^^ { v => if (definitions contains v) definitions(v) else { println(s"Not defined variable: $v"); 0 }   }
 
   implicit class int2Factorial(n: Double) {
     def ! : Double = {
@@ -89,8 +95,8 @@ class LangageInterpreter(s: String) extends JavaTokenParsers {
   }
 
   def compute(): Double = {
-    m_storedResult = parseAll(expr, expressionToCompute) get;
-    m_storedResult
+    definitions("res") = parseAll(expr, expressionToCompute).get
+    definitions("res")
   }
 }
 
