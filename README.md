@@ -1,7 +1,7 @@
 # Scalarith
 
 <h1 style="text-align:center">
-<img src="./example/example_output.png" >
+<img src="./example_output.png" >
 </h1>
 
 A basic expression interpreter made with Scala.
@@ -23,3 +23,4 @@ This expression parser supports :
 - Classical constants : pi 
 - Convenient way of computing percentages : x % of y => 28% of 50 = 14
 - Memory of the last operation : res => 2 * 5 = 10 ; res * 2 = 2 * 10 = 20
+- Variables definition : define x = 5 => x is reusable
