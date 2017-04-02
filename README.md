@@ -22,3 +22,4 @@ This expression parser supports :
 - The imbricated functions : cos ( sin ( tan ( cos ( 0 ) ) ) ) ^ E^(5*6)
 - Classical constants : pi 
 - Convenient way of computing percentages : x % of y => 28% of 50 = 14
+- Memory of the last operation : res => 2 * 5 = 10 ; res * 2 = 2 * 10 = 20
