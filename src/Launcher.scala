@@ -1,5 +1,3 @@
-package Exercise_5
-
 import scala.io.StdIn
 
 /**
@@ -8,13 +6,13 @@ import scala.io.StdIn
 object Launcher {
   def main(args: Array[String]): Unit = {
     while (true) {
-      var expression = StdIn.readLine(">")
+      val expression = StdIn.readLine(">")
       if( List("quit","stop","bye","end") contains expression ) { println("Thank you :) Bye."); System.exit(0) }
       try {
         println(s"$expression = ${LangageInterpreter(expression).compute()}")
       }
       catch {
-        case ex: Exception => println("Please input a correct expression.")
+        case _: Exception => println("Please input a correct expression.")
       }
     }
   }
