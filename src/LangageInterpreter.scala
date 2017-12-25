@@ -1,5 +1,3 @@
-package Exercise_5
-
 import scala.util.parsing.combinator.JavaTokenParsers
 
 /**
@@ -18,7 +16,7 @@ class LangageInterpreter(s: String) extends JavaTokenParsers {
   var expressionToCompute:String = s
   var definitions: scala.collection.mutable.Map[String,Double] = scala.collection.mutable.Map("pi" -> Math.PI, "res" -> 0.0)
 
-  def expr: Parser[Double] =  definition | lowPriorityOperations
+  def expr: Parser[Double] =  variable_definition | lowPriorityOperations
 
   def lowPriorityOperations: Parser[Double] =  highPriorityOperations ~ rep("+" ~ highPriorityOperations | "-" ~ highPriorityOperations) ^^ {
     case o1 ~ o2 => o2.foldLeft(o1) {
@@ -40,7 +38,7 @@ class LangageInterpreter(s: String) extends JavaTokenParsers {
     }
   }
 
-  def operand: Parser[Double] =   factorial | percent | number | expression | exponential | ln | E | trigonometry | sqrt | variable
+  def operand: Parser[Double] =   factorial | percent | number | expression | exponential | ln | E | trigonometry | sqrt | call
 
   def number: Parser[Double] = floatingPointNumber ^^ { f => f toDouble }
 
@@ -79,12 +77,12 @@ class LangageInterpreter(s: String) extends JavaTokenParsers {
     }
   }
 
-  def definition: Parser[Double] = "define" ~ """\w+""".r ~ "=" ~ operand ^^ {
+  def variable_definition: Parser[Double] = "define" ~ """\w+""".r ~ "=" ~ expr ^^ {
     case d ~ v ~ e ~ o => definitions += (v -> o)
-    definitions(v)
+      definitions(v)
   }
 
-  def variable: Parser[Double] = """\w+""".r ^^ { v => if (definitions contains v) definitions(v) else { println(s"Not defined variable: $v"); 0 }   }
+  def call: Parser[Double] = """\w+""".r ^^ { v => if (definitions contains v) definitions(v) else { println(s"Not defined variable / function: $v"); 0 }   }
 
   implicit class int2Factorial(n: Double) {
     def ! : Double = {
@@ -99,4 +97,3 @@ class LangageInterpreter(s: String) extends JavaTokenParsers {
     definitions("res")
   }
 }
-
